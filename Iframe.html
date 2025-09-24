@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sonax - Atendimento Omnichannel</title>
+    
+    <!-- Adicionando configurações de CSP e iframe para Vercel -->
+    <meta http-equiv="Content-Security-Policy" content="frame-ancestors *; default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https: http:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';">
+    <meta http-equiv="X-Frame-Options" content="ALLOWALL">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <!-- Meta tags específicas para iframe embedding -->
+    <meta name="frame-options" content="allow">
+    <meta name="iframe-resizer" content="true">
+    
     <style>
         * {
             margin: 0;
@@ -12,25 +22,25 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: white;
-            height: 100vh;
-            overflow: hidden;
-            width: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            background: white !important;
+            height: 100vh !important;
+            overflow: hidden !important;
+            width: 100% !important;
         }
 
         .container {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            max-width: 350px;
-            max-height: 500px;
-            margin: 0 auto;
+            width: 100% !important;
+            height: 100vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+            background: white !important;
+            border-radius: 12px !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+            overflow: hidden !important;
+            max-width: 350px !important;
+            max-height: 500px !important;
+            margin: 0 auto !important;
         }
 
         .header {
@@ -242,11 +252,40 @@
 </head>
 <body>
     <script>
-        console.log('[v0] Sonax Widget carregado');
+        console.log('[v0] Sonax Widget iniciando...');
+        console.log('[v0] User Agent:', navigator.userAgent);
+        console.log('[v0] Em iframe:', window !== window.top);
+        console.log('[v0] URL atual:', window.location.href);
+        
+        // Detecta se está em iframe e ajusta comportamento
+        const isInIframe = window !== window.top;
+        
+        if (isInIframe) {
+            console.log('[v0] Executando em iframe - ajustando configurações');
+            document.body.style.margin = '0';
+            document.body.style.padding = '0';
+        }
         
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('[v0] DOM pronto');
+            console.log('[v0] DOM carregado com sucesso em iframe');
         });
+        
+        // Função melhorada para abrir links considerando iframe
+        function openLink(url, target = '_blank') {
+            console.log('[v0] Abrindo link:', url);
+            
+            if (isInIframe) {
+                // Em iframe, tenta abrir no parent
+                try {
+                    window.parent.open(url, target);
+                } catch (e) {
+                    console.log('[v0] Fallback para window.open');
+                    window.open(url, target);
+                }
+            } else {
+                window.open(url, target);
+            }
+        }
     </script>
 
     <div class="container">
@@ -349,7 +388,8 @@
                 return;
             }
 
-            window.open(`tel:${cleanNumber}`, "_self");
+            console.log('[v0] Iniciando ligação para:', cleanNumber);
+            openLink(`tel:${cleanNumber}`, '_self');
 
             const callBtn = document.querySelector(".call-btn");
             const originalText = callBtn.textContent;
@@ -387,7 +427,8 @@
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://wa.me/${fullNumber}?text=${encodedMessage}`;
             
-            window.open(whatsappUrl, "_blank");
+            console.log('[v0] Abrindo WhatsApp para:', fullNumber);
+            openLink(whatsappUrl, '_blank');
 
             const sendBtn = document.querySelector(".whatsapp-send-btn");
             const originalText = sendBtn.textContent;
