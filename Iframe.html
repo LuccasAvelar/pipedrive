@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sonax - Atendimento Omnichannel</title>
-    <!-- Adicionando meta tags para permitir iframe -->
-    <meta http-equiv="Content-Security-Policy" content="frame-ancestors *;">
-    <meta http-equiv="X-Frame-Options" content="ALLOWALL">
-    <!-- Adicionando CSS inline para arquivo único -->
     <style>
         * {
             margin: 0;
@@ -17,9 +13,10 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: transparent;
+            background: white;
             height: 100vh;
             overflow: hidden;
+            width: 100%;
         }
 
         .container {
@@ -244,20 +241,15 @@
     </style>
 </head>
 <body>
-    <!-- Adicionando script para detectar se está em iframe -->
     <script>
-        // Detecta se está sendo carregado em iframe e ajusta comportamento
-        if (window.self !== window.top) {
-            console.log('[v0] Carregado em iframe - ajustando configurações');
-            // Força o carregamento mesmo em iframe
-            document.addEventListener('DOMContentLoaded', function() {
-                console.log('[v0] DOM carregado com sucesso em iframe');
-            });
-        }
+        console.log('[v0] Sonax Widget carregado');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[v0] DOM pronto');
+        });
     </script>
 
     <div class="container">
-        <!-- Header com Logo -->
         <div class="header">
             <div class="logo">
                 <div class="cloud-icon">☁</div>
@@ -265,7 +257,6 @@
             </div>
         </div>
 
-        <!-- Tela Principal -->
         <div id="mainScreen" class="screen active">
             <div class="main-content">
                 <h2>Atendimento Omnichannel</h2>
@@ -285,7 +276,6 @@
             </div>
         </div>
 
-        <!-- Tela de Telefone -->
         <div id="phoneScreen" class="screen">
             <div class="screen-content">
                 <button class="back-btn" onclick="showMainScreen()">← Voltar</button>
@@ -301,7 +291,6 @@
             </div>
         </div>
 
-        <!-- Tela de WhatsApp -->
         <div id="whatsappScreen" class="screen">
             <div class="screen-content">
                 <button class="back-btn" onclick="showMainScreen()">← Voltar</button>
@@ -322,9 +311,7 @@
         </div>
     </div>
 
-    <!-- Adicionando JavaScript inline para arquivo único -->
     <script>
-        // Funções de navegação entre telas
         function showMainScreen() {
             hideAllScreens();
             document.getElementById("mainScreen").classList.add("active");
@@ -347,7 +334,6 @@
             });
         }
 
-        // Função para fazer ligação
         function makeCall() {
             const phoneNumber = document.getElementById("phoneNumber").value;
 
@@ -356,7 +342,6 @@
                 return;
             }
 
-            // Remove caracteres especiais do número
             const cleanNumber = phoneNumber.replace(/\D/g, "");
 
             if (cleanNumber.length < 10) {
@@ -364,18 +349,8 @@
                 return;
             }
 
-            try {
-                if (window.parent && window.parent !== window) {
-                    window.parent.open(`tel:${cleanNumber}`, "_blank");
-                } else {
-                    window.open(`tel:${cleanNumber}`, "_self");
-                }
-            } catch (e) {
-                // Fallback se não conseguir acessar parent
-                window.open(`tel:${cleanNumber}`, "_self");
-            }
+            window.open(`tel:${cleanNumber}`, "_self");
 
-            // Feedback visual
             const callBtn = document.querySelector(".call-btn");
             const originalText = callBtn.textContent;
             callBtn.textContent = "Ligando...";
@@ -387,7 +362,6 @@
             }, 2000);
         }
 
-        // Função para enviar WhatsApp
         function sendWhatsApp() {
             const phoneNumber = document.getElementById("whatsappNumber").value;
             const message = document.getElementById("whatsappMessage").value;
@@ -402,7 +376,6 @@
                 return;
             }
 
-            // Remove caracteres especiais do número
             const cleanNumber = phoneNumber.replace(/\D/g, "");
 
             if (cleanNumber.length < 10) {
@@ -410,25 +383,12 @@
                 return;
             }
 
-            // Adiciona código do país se não tiver
             const fullNumber = cleanNumber.startsWith("55") ? cleanNumber : "55" + cleanNumber;
-
-            // Codifica a mensagem para URL
             const encodedMessage = encodeURIComponent(message);
-
             const whatsappUrl = `https://wa.me/${fullNumber}?text=${encodedMessage}`;
-            try {
-                if (window.parent && window.parent !== window) {
-                    window.parent.open(whatsappUrl, "_blank");
-                } else {
-                    window.open(whatsappUrl, "_blank");
-                }
-            } catch (e) {
-                // Fallback se não conseguir acessar parent
-                window.open(whatsappUrl, "_blank");
-            }
+            
+            window.open(whatsappUrl, "_blank");
 
-            // Feedback visual
             const sendBtn = document.querySelector(".whatsapp-send-btn");
             const originalText = sendBtn.textContent;
             sendBtn.textContent = "Enviando...";
@@ -437,13 +397,11 @@
             setTimeout(() => {
                 sendBtn.textContent = originalText;
                 sendBtn.disabled = false;
-                // Limpa os campos após enviar
                 document.getElementById("whatsappNumber").value = "";
                 document.getElementById("whatsappMessage").value = "";
             }, 2000);
         }
 
-        // Formatação automática do telefone
         function formatPhone(input) {
             let value = input.value.replace(/\D/g, "");
 
@@ -458,7 +416,6 @@
             input.value = value;
         }
 
-        // Adiciona formatação automática aos campos de telefone
         document.addEventListener("DOMContentLoaded", () => {
             const phoneInputs = document.querySelectorAll('input[type="tel"]');
 
